@@ -1,27 +1,95 @@
 package ni.edu.uam.facturacionapp.dao;
-import ni.edu.uam.facturacionapp.database.ConexionDB;
+
 import ni.edu.uam.facturacionapp.model.Categoria;
+import ni.edu.uam.facturacionapp.database.ConexionDB;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CategoriaDao {
+
+    public boolean insertar(Categoria c) throws SQLException {
+        String sql = "INSERT INTO categoria (nombre, is_active) VALUES (?, ?)";
+
+        Connection conn = ConexionDB.conectar();
+
+        if (conn == null) {
+            throw new SQLException("No se pudo establecer la conexión a la base de datos.");
+        }
+
+        try (conn;
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, c.getNombre());
+            stmt.setBoolean(2, c.isActiva());
+
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    public boolean actualizar(Categoria c) throws SQLException {
+        String sql = "UPDATE categoria SET nombre = ?, is_active = ? WHERE id = ?";
+
+        Connection conn = ConexionDB.conectar();
+
+        if (conn == null) {
+            throw new SQLException("No se pudo establecer la conexión a la base de datos.");
+        }
+
+        try (conn;
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, c.getNombre());
+            stmt.setBoolean(2, c.isActiva());
+            stmt.setInt(3, c.getId());
+
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    public boolean eliminar(int id) throws SQLException {
+        String sql = "DELETE FROM categoria WHERE id = ?";
+
+        Connection conn = ConexionDB.conectar();
+
+        if (conn == null) {
+            throw new SQLException("No se pudo establecer la conexión a la base de datos.");
+        }
+
+        try (conn;
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
     public List<Categoria> listar() throws SQLException {
         List<Categoria> lista = new ArrayList<>();
-        String sql = "SELECT * FROM categoria WHERE activa = true";
+        String sql = "SELECT id, nombre, is_active FROM categoria";
 
-        try (Connection conn = ConexionDB.conectar();
+        Connection conn = ConexionDB.conectar();
+
+        if (conn == null) {
+            throw new SQLException("No se pudo establecer la conexión a la base de datos.");
+        }
+
+        try (conn;
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
             while (rs.next()) {
-                lista.add(new Categoria(
+                Categoria c = new Categoria(
                         rs.getInt("id"),
                         rs.getString("nombre"),
-                        rs.getBoolean("activa")
-                ));
+                        rs.getBoolean("is_active")
+                );
+                lista.add(c);
             }
         }
+
         return lista;
     }
 }
