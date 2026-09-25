@@ -1,9 +1,13 @@
 package ni.edu.uam.facturacionapp;
 
 import javafx.application.Application;
+import ni.edu.uam.facturacionapp.database.ConexionDB;
 
 public class Launcher {
     public static void main(String[] args) {
         Application.launch(FacturacionApplication.class, args);
+
+        ConexionDB.conectar();
+
     }
 }
