@@ -13,9 +13,9 @@ public class Producto {
     private Integer id;
     private String codigo;
     private String nombre;
-    private String categoria;
-    private BigDecimal precio;
-    private int exsistencia;
-    private String rutaimagen;
+    private Categoria categoria;
+    private BigDecimal precioVenta;
+    private int existencia;
+    private String rutaImagen;
     private boolean activo;
 }
