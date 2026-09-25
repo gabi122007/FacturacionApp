@@ -11,7 +11,7 @@ public class MenuPrincipalController {
     private void abrirProductos() {
         try {
             SceneManager.abrirVentana(
-                    "/ni/edu/uam/facturacion/fxml/producto-view.fxml",
+                    "/ni/edu/uam/facturacionapp/fxml/producto-view.fxml",
                     "Gestión de productos");
         } catch (IOException e) {
             new Alert(Alert.AlertType.ERROR,
