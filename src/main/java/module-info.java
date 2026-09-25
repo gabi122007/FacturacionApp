@@ -6,4 +6,8 @@ module ni.edu.uam.facturacionapp {
 
     opens ni.edu.uam.facturacionapp to javafx.fxml;
     exports ni.edu.uam.facturacionapp;
+    opens ni.edu.uam.facturacionapp.controller to javafx.fxml;
+    exports ni.edu.uam.facturacionapp.controller;
+    opens ni.edu.uam.facturacionapp.model to javafx.fxml;
+    exports ni.edu.uam.facturacionapp.model;
 }
