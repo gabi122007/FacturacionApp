@@ -28,12 +28,22 @@
                 <Insets bottom="20.0" left="50.0" right="50.0" top="20.0" />
             </padding>
             <children>
-                <Button mnemonicParsing="false" onAction="#abrirProductos" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: #3498db;" text="Gestión de Productos" textFill="WHITE">
+                <!-- Botón de Productos -->
+                <Button mnemonicParsing="false" onAction="#abrirProductos" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: #044570;" text="Gestión de Productos" textFill="WHITE">
                     <font>
                         <Font size="15.0" />
                     </font>
                 </Button>
-                <Button mnemonicParsing="false" onAction="#salir" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: #e74c3c;" text="Salir del Sistema" textFill="WHITE">
+
+                <!-- Nuevo Botón de Categorías -->
+                <Button mnemonicParsing="false" onAction="#abrirCategorias" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: #320478;" text="Gestión de Categorías" textFill="WHITE">
+                    <font>
+                        <Font size="15.0" />
+                    </font>
+                </Button>
+
+                <!-- Botón Salir -->
+                <Button mnemonicParsing="false" onAction="#salir" prefHeight="45.0" prefWidth="250.0" style="-fx-background-color: #1b1b3e;" text="Salir del Sistema" textFill="WHITE">
                     <font>
                         <Font size="15.0" />
                     </font>
