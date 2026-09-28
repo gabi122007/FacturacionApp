@@ -1,0 +1,72 @@
+package ni.edu.uam.facturacionapp.dao;
+import ni.edu.uam.facturacionapp.model.Categoria;
+import ni.edu.uam.facturacionapp.model.Producto;
+import ni.edu.uam.facturacionapp.database.ConexionDB;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class ProductoDao {
+
+    public boolean insertar(Producto p) throws SQLException {
+        String sql = "INSERT INTO producto (codigo, nombre, categoria_id, precio_venta, existencia, ruta_imagen, activo) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            if (conn == null) {
+                throw new SQLException("No se pudo establecer la conexión a la base de datos.");
+            }
+
+            stmt.setString(1, p.getCodigo());
+            stmt.setString(2, p.getNombre());
+            stmt.setInt(3, p.getCategoria().getId());
+            stmt.setBigDecimal(4, p.getPrecioVenta());
+            stmt.setInt(5, p.getExistencia());
+            stmt.setString(6, p.getRutaImagen());
+            stmt.setBoolean(7, p.getActivo());
+
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    public List<Producto> listar() throws SQLException {
+        List<Producto> lista = new ArrayList<>();
+        String sql = "SELECT p.*, c.nombre AS nombre_categoria, c.activa AS activo_categoria " +
+                "FROM producto p " +
+                "INNER JOIN categoria c ON p.categoria_id = c.id";
+
+        try (Connection conn = ConexionDB.conectar();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (conn == null) {
+                throw new SQLException("No se pudo establecer la conexión a la base de datos.");
+            }
+
+            while (rs.next()) {
+                Categoria cat = new Categoria(
+                        rs.getInt("categoria_id"),
+                        rs.getString("nombre_categoria"),
+                        rs.getBoolean("activo_categoria")
+                );
+
+                Producto p = new Producto(
+                        rs.getInt("id"),
+                        rs.getString("codigo"),
+                        rs.getString("nombre"),
+                        cat,
+                        rs.getBigDecimal("precio_venta"),
+                        rs.getInt("existencia"),
+                        rs.getString("ruta_imagen"),
+                        rs.getBoolean("activo")
+                );
+                lista.add(p);
+            }
+        }
+        return lista;
+    }
+}
+
