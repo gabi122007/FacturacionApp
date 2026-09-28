@@ -40,30 +40,30 @@ public class ProductoController {
 
     @FXML
     private void initialize() {
-        // 1. Configuración del mapeo de columnas con el modelo Producto
+
         colId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
         colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
 
-        // Mapeo para extraer el nombre de la categoría asignada
+
         colCategoria.setCellValueFactory(cellData -> {
             Categoria cat = cellData.getValue().getCategoria();
             return new SimpleStringProperty(cat != null ? cat.getNombre() : "");
         });
 
-        // IMPORTANTE: Usa "precioVenta" si en tu clase Producto el atributo se llama así
+
         colPrecio.setCellValueFactory(new PropertyValueFactory<>("precioVenta"));
         colExistencia.setCellValueFactory(new PropertyValueFactory<>("existencia"));
         colActivo.setCellValueFactory(new PropertyValueFactory<>("activo"));
 
-        // 2. Cargar categorías
+
         try {
             cmbCategoria.setItems(FXCollections.observableArrayList(categoriaDAO.listar()));
         } catch (SQLException e) {
             mensaje(Alert.AlertType.ERROR, "Error al cargar categorías: " + e.getMessage());
         }
 
-        // 3. Enlazar lista y cargar desde PostgreSQL
+
         tblProductos.setItems(productos);
         chkActivo.setSelected(true);
         cargarProductos();
@@ -106,7 +106,6 @@ public class ProductoController {
                 return;
             }
 
-            // Se crea el objeto producto con los datos del formulario
             Producto nuevoProducto = new Producto(
                     null,
                     txtCodigo.getText().trim(),
@@ -118,10 +117,9 @@ public class ProductoController {
                     chkActivo.isSelected()
             );
 
-            // Se inserta en la base de datos mediante el DAO
             if (productoDAO.insertar(nuevoProducto)) {
                 mensaje(Alert.AlertType.INFORMATION, "Producto guardado con éxito en PostgreSQL.");
-                cargarProductos(); // Se refresca la lista desde la BD
+                cargarProductos();
                 limpiar();
             }
 
