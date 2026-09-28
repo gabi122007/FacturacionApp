@@ -3,9 +3,7 @@ package ni.edu.uam.facturacionapp.model;
 import lombok.*;
 
 @Data
-@Getter
 @AllArgsConstructor
-@Setter
 @NoArgsConstructor
 public class Cargo {
     private Integer id;

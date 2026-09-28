@@ -5,10 +5,8 @@ import lombok.*;
 import java.time.LocalDate;
 
 @NoArgsConstructor
-@Setter
 @AllArgsConstructor
 @Data
-@Getter
 public class Empleado {
     private Integer id;
     private String nombres;
