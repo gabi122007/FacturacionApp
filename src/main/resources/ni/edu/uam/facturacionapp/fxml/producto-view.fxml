@@ -97,14 +97,15 @@
                 </HBox>
 
                 <!-- Tabla de Productos -->
-                <TableView fx:id="tblProductos" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                <TableView fx:id="tblProductos">
                     <columns>
-                        <TableColumn prefWidth="90.0" text="Código" />
-                        <TableColumn prefWidth="150.0" text="Nombre" />
-                        <TableColumn prefWidth="110.0" text="Categoría" />
-                        <TableColumn prefWidth="85.0" text="Precio" />
-                        <TableColumn prefWidth="85.0" text="Existencia" />
-                        <TableColumn prefWidth="75.0" text="Activo" />
+                        <TableColumn fx:id="colId" text="ID" />
+                        <TableColumn fx:id="colCodigo" text="Código" />
+                        <TableColumn fx:id="colNombre" text="Nombre" />
+                        <TableColumn fx:id="colCategoria" text="Categoría" />
+                        <TableColumn fx:id="colPrecio" text="Precio" />
+                        <TableColumn fx:id="colExistencia" text="Existencia" />
+                        <TableColumn fx:id="colActivo" text="Activo" />
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

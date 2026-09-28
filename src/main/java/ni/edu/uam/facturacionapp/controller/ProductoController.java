@@ -8,32 +8,74 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import ni.edu.uam.facturacionapp.dao.CategoriaDao;
+import ni.edu.uam.facturacionapp.dao.ProductoDao;
 import ni.edu.uam.facturacionapp.model.Categoria;
 import ni.edu.uam.facturacionapp.model.Producto;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.sql.SQLException;
 
 public class ProductoController {
-    @FXML
-    private TextField txtCodigo, txtNombre, txtPrecio, txtExistencia;
+    @FXML private TextField txtCodigo, txtNombre, txtPrecio, txtExistencia;
     @FXML private ComboBox<Categoria> cmbCategoria;
     @FXML private CheckBox chkActivo;
     @FXML private ImageView imgProducto;
     @FXML private TableView<Producto> tblProductos;
+    @FXML private TableColumn<Producto, Integer> colId;
+    @FXML private TableColumn<Producto, String> colCodigo;
+    @FXML private TableColumn<Producto, String> colNombre;
+    @FXML private TableColumn<Producto, String> colCategoria;
+    @FXML private TableColumn<Producto, BigDecimal> colPrecio;
+    @FXML private TableColumn<Producto, Integer> colExistencia;
+    @FXML private TableColumn<Producto, Boolean> colActivo;
 
-    private final ObservableList<Producto> productos =
-            FXCollections.observableArrayList();
+    private final ObservableList<Producto> productos = FXCollections.observableArrayList();
+    private final ProductoDao productoDAO = new ProductoDao();
     private String rutaImagen;
+    private final CategoriaDao categoriaDAO = new CategoriaDao();
 
     @FXML
     private void initialize() {
-        cmbCategoria.setItems(FXCollections.observableArrayList(
-                new Categoria(1, "Alimentos", true),
-                new Categoria(2, "Bebidas", true),
-                new Categoria(3, "Limpieza", true)));
+        // 1. Configuración del mapeo de columnas con el modelo Producto
+        colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colCodigo.setCellValueFactory(new PropertyValueFactory<>("codigo"));
+        colNombre.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+
+        // Mapeo para extraer el nombre de la categoría asignada
+        colCategoria.setCellValueFactory(cellData -> {
+            Categoria cat = cellData.getValue().getCategoria();
+            return new SimpleStringProperty(cat != null ? cat.getNombre() : "");
+        });
+
+        // IMPORTANTE: Usa "precioVenta" si en tu clase Producto el atributo se llama así
+        colPrecio.setCellValueFactory(new PropertyValueFactory<>("precioVenta"));
+        colExistencia.setCellValueFactory(new PropertyValueFactory<>("existencia"));
+        colActivo.setCellValueFactory(new PropertyValueFactory<>("activo"));
+
+        // 2. Cargar categorías
+        try {
+            cmbCategoria.setItems(FXCollections.observableArrayList(categoriaDAO.listar()));
+        } catch (SQLException e) {
+            mensaje(Alert.AlertType.ERROR, "Error al cargar categorías: " + e.getMessage());
+        }
+
+        // 3. Enlazar lista y cargar desde PostgreSQL
         tblProductos.setItems(productos);
         chkActivo.setSelected(true);
+        cargarProductos();
+    }
+
+    private void cargarProductos() {
+        try {
+            productos.clear();
+            productos.addAll(productoDAO.listar());
+        } catch (SQLException e) {
+            mensaje(Alert.AlertType.ERROR, "Error al cargar productos de PostgreSQL: " + e.getMessage());
+        }
     }
 
     @FXML
@@ -60,17 +102,33 @@ public class ProductoController {
             BigDecimal precio = new BigDecimal(txtPrecio.getText().trim());
             int existencia = Integer.parseInt(txtExistencia.getText().trim());
             if (precio.signum() <= 0 || existencia < 0) {
-                mensaje(Alert.AlertType.WARNING,
-                        "Precio mayor que cero y existencia no negativa.");
+                mensaje(Alert.AlertType.WARNING, "Precio mayor que cero y existencia no negativa.");
                 return;
             }
-            productos.add(new Producto(null, txtCodigo.getText().trim(),
-                    txtNombre.getText().trim(), cmbCategoria.getValue(), precio,
-                    existencia, rutaImagen, chkActivo.isSelected()));
-            mensaje(Alert.AlertType.INFORMATION, "Producto agregado correctamente.");
-            limpiar();
+
+            // Se crea el objeto producto con los datos del formulario
+            Producto nuevoProducto = new Producto(
+                    null,
+                    txtCodigo.getText().trim(),
+                    txtNombre.getText().trim(),
+                    cmbCategoria.getValue(),
+                    precio,
+                    existencia,
+                    rutaImagen,
+                    chkActivo.isSelected()
+            );
+
+            // Se inserta en la base de datos mediante el DAO
+            if (productoDAO.insertar(nuevoProducto)) {
+                mensaje(Alert.AlertType.INFORMATION, "Producto guardado con éxito en PostgreSQL.");
+                cargarProductos(); // Se refresca la lista desde la BD
+                limpiar();
+            }
+
         } catch (NumberFormatException e) {
             mensaje(Alert.AlertType.ERROR, "Precio o existencia no válidos.");
+        } catch (SQLException e) {
+            mensaje(Alert.AlertType.ERROR, "Error de base de datos: " + e.getMessage());
         }
     }
 
