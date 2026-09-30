@@ -5,8 +5,6 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Setter
-@Getter
 public class Categoria {
     private Integer id;
     private String nombre;
