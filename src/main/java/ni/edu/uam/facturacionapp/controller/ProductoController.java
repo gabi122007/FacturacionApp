@@ -2,6 +2,8 @@ package ni.edu.uam.facturacionapp.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -39,8 +41,8 @@ public class ProductoController {
     private String rutaImagen;
     private final CategoriaDao categoriaDAO = new CategoriaDao();
 
-    // Variable para controlar si se está creando o editando un producto
     private Producto productoEdicion = null;
+    @FXML private TextField txtBuscar;
 
     @FXML
     private void initialize() {
@@ -67,6 +69,7 @@ public class ProductoController {
         tblProductos.setItems(productos);
         chkActivo.setSelected(true);
         cargarProductos();
+        Buscador();
     }
 
     private void cargarProductos() {
@@ -146,7 +149,6 @@ public class ProductoController {
             }
 
             if (productoEdicion == null) {
-                // MODO: INSERTAR NUEVO
                 Producto nuevoProducto = new Producto(
                         null,
                         txtCodigo.getText().trim(),
@@ -164,7 +166,6 @@ public class ProductoController {
                     limpiar();
                 }
             } else {
-                // MODO: ACTUALIZAR EXISTENTE
                 productoEdicion.setCodigo(txtCodigo.getText().trim());
                 productoEdicion.setNombre(txtNombre.getText().trim());
                 productoEdicion.setCategoria(cmbCategoria.getValue());
@@ -221,6 +222,38 @@ public class ProductoController {
             }
         }
     }
+
+    private void Buscador() {
+        FilteredList<Producto> productosFiltrados = new FilteredList<>(productos, p -> true);
+
+        txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
+            productosFiltrados.setPredicate(p -> {
+                if (newValue == null || newValue.isBlank()) {
+                    return true;
+                }
+
+                String busqueda = newValue.toLowerCase().trim();
+
+                if (p.getNombre() != null && p.getNombre().toLowerCase().contains(busqueda)) {
+                    return true;
+                } else if (p.getCodigo() != null && p.getCodigo().toLowerCase().contains(busqueda)) {
+                    return true;
+                } else if (p.getCategoria() != null && p.getCategoria().getNombre() != null
+                        && p.getCategoria().getNombre().toLowerCase().contains(busqueda)) {
+                    return true;
+                }
+
+                return false;
+            });
+        });
+
+
+        SortedList<Producto> productosOrdenados = new SortedList<>(productosFiltrados);
+        productosOrdenados.comparatorProperty().bind(tblProductos.comparatorProperty());
+
+        tblProductos.setItems(productosOrdenados);
+    }
+
 
     @FXML
     private void cerrar() {
