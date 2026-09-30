@@ -24,14 +24,14 @@ public class CategoriaController {
     @FXML private TableColumn<Categoria, String> colNombre;
     @FXML private TableColumn<Categoria, Boolean> colActivo;
     @FXML private TextField txtBuscar;
-    // Referencias a botones según fx:id en el FXML
+
     @FXML private Button btnEliminar;
     @FXML private Button btnActualizar;
 
     private final ObservableList<Categoria> categorias = FXCollections.observableArrayList();
     private final CategoriaDao categoriaDAO = new CategoriaDao();
 
-    // Variable para rastrear la categoría que se está editando
+
     private Categoria categoriaEdicion = null;
 
     @FXML
@@ -57,7 +57,7 @@ public class CategoriaController {
         }
     }
 
-    // Método asociado al botón "Editar" o selección
+
     @FXML
     private void editar() {
         Categoria seleccionada = tblCategorias.getSelectionModel().getSelectedItem();
