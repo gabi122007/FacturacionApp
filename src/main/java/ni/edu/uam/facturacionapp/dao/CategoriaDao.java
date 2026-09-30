@@ -10,7 +10,7 @@ import java.util.List;
 public class CategoriaDao {
 
     public boolean insertar(Categoria c) throws SQLException {
-        String sql = "INSERT INTO categoria (nombre, is_active) VALUES (?, ?)";
+        String sql = "INSERT INTO categoria (nombre, active) VALUES (?, ?)";
 
         Connection conn = ConexionDB.conectar();
 
@@ -29,7 +29,7 @@ public class CategoriaDao {
     }
 
     public boolean actualizar(Categoria c) throws SQLException {
-        String sql = "UPDATE categoria SET nombre = ?, is_active = ? WHERE id = ?";
+        String sql = "UPDATE categoria SET nombre = ?, activa = ? WHERE id = ?";
 
         Connection conn = ConexionDB.conectar();
 
@@ -68,7 +68,7 @@ public class CategoriaDao {
 
     public List<Categoria> listar() throws SQLException {
         List<Categoria> lista = new ArrayList<>();
-        String sql = "SELECT id, nombre, is_active FROM categoria";
+        String sql = "SELECT id, nombre, activa FROM categoria";
 
         Connection conn = ConexionDB.conectar();
 
@@ -84,7 +84,7 @@ public class CategoriaDao {
                 Categoria c = new Categoria(
                         rs.getInt("id"),
                         rs.getString("nombre"),
-                        rs.getBoolean("is_active")
+                        rs.getBoolean("activa")
                 );
                 lista.add(c);
             }

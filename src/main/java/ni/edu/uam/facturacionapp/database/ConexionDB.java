@@ -1,8 +1,11 @@
 package ni.edu.uam.facturacionapp.database;
+import lombok.Getter;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+@Getter
 public class ConexionDB {
 
         private static final String URL =
@@ -10,7 +13,7 @@ public class ConexionDB {
 
         private static final String USUARIO = "postgres";
 
-        private static final String PASSWORD = "12345";
+        private static final String PASSWORD = "123DB";
 
         public static Connection conectar() {
             Connection conexion = null;

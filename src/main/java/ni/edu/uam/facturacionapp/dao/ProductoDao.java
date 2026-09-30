@@ -13,7 +13,7 @@ public class ProductoDao {
     public boolean insertar(Producto p) throws SQLException {
 
         String sql = "INSERT INTO producto " +
-                "(codigo, nombre, id_categoria, precio_venta, existencia, ruta_imagen, activo) " +
+                "(codigo, nombre, categoria_id, precio_venta, existencia, ruta_imagen, activo) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         Connection conn = ConexionDB.conectar();
@@ -48,7 +48,7 @@ public class ProductoDao {
                 "c.nombre AS nombre_categoria, " +
                 "c.activa AS activa_cat " +
                 "FROM producto p " +
-                "INNER JOIN categoria c ON p.id_categoria = c.id";
+                "INNER JOIN categoria c ON p.categoria_id = c.id";
 
         Connection conn = ConexionDB.conectar();
 
@@ -65,7 +65,7 @@ public class ProductoDao {
             while (rs.next()) {
 
                 Categoria cat = new Categoria(
-                        rs.getInt("id_categoria"),
+                        rs.getInt("categoria_id"),
                         rs.getString("nombre_categoria"),
                         rs.getBoolean("activa_cat")
                 );
@@ -88,7 +88,7 @@ public class ProductoDao {
         return lista;
     }
 
-    // MÉTODO AGREGADO PARA RESOLVER EL ERROR:
+
     public boolean eliminar(int id) throws SQLException {
         String sql = "DELETE FROM producto WHERE id = ?";
 
@@ -109,7 +109,7 @@ public class ProductoDao {
         }
     }
     public boolean actualizar(Producto p) throws SQLException {
-        String sql = "UPDATE producto SET codigo = ?, nombre = ?, id_categoria = ?, " +
+        String sql = "UPDATE producto SET codigo = ?, nombre = ?, categoria_id = ?, " +
                 "precio_venta = ?, existencia = ?, ruta_imagen = ?, activo = ? " +
                 "WHERE id = ?";
 

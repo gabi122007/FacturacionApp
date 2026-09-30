@@ -2,6 +2,8 @@ package ni.edu.uam.facturacionapp.controller;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -19,15 +21,11 @@ public class CategoriaController {
     @FXML private TableColumn<Categoria, Integer> colId;
     @FXML private TableColumn<Categoria, String> colNombre;
     @FXML private TableColumn<Categoria, Boolean> colActivo;
-
-    // Referencias a botones según fx:id en el FXML
-    @FXML private Button btnEliminar;
-    @FXML private Button btnActualizar;
+    @FXML private TextField txtBuscar;
 
     private final ObservableList<Categoria> categorias = FXCollections.observableArrayList();
     private final CategoriaDao categoriaDAO = new CategoriaDao();
 
-    // Variable para rastrear la categoría que se está editando
     private Categoria categoriaEdicion = null;
 
     @FXML
@@ -40,6 +38,7 @@ public class CategoriaController {
         chkActivo.setSelected(true);
 
         cargarCategorias();
+        Buscador();
     }
 
     private void cargarCategorias() {
@@ -51,7 +50,7 @@ public class CategoriaController {
         }
     }
 
-    // Método asociado al botón "Editar" o selección
+
     @FXML
     private void editar() {
         Categoria seleccionada = tblCategorias.getSelectionModel().getSelectedItem();
@@ -66,12 +65,6 @@ public class CategoriaController {
         chkActivo.setSelected(seleccionada.isActiva());
     }
 
-    // Método invocado por el botón con onAction="#actualizar" en tu FXML
-    @FXML
-    private void actualizar() {
-        // Carga los datos seleccionados al formulario o ejecuta la edición
-        editar();
-    }
 
     @FXML
     private void guardar() {
@@ -82,7 +75,6 @@ public class CategoriaController {
 
         try {
             if (categoriaEdicion == null) {
-                // Modo: INSERTAR
                 Categoria nuevaCategoria = new Categoria(
                         null,
                         txtNombre.getText().trim(),
@@ -95,7 +87,6 @@ public class CategoriaController {
                     limpiar();
                 }
             } else {
-                // Modo: ACTUALIZAR
                 categoriaEdicion.setNombre(txtNombre.getText().trim());
                 categoriaEdicion.setActiva(chkActivo.isSelected());
 
@@ -112,7 +103,6 @@ public class CategoriaController {
         }
     }
 
-    // Método invocado por el botón con onAction="#eliminar" en tu FXML
     @FXML
     private void eliminar() {
         Categoria seleccionada = tblCategorias.getSelectionModel().getSelectedItem();
@@ -146,11 +136,44 @@ public class CategoriaController {
         }
     }
 
+    private void Buscador() {
+
+        FilteredList<Categoria> categoriasFiltradas = new FilteredList<>(categorias, c -> true);
+
+
+        txtBuscar.textProperty().addListener((observable, oldValue, newValue) -> {
+            categoriasFiltradas.setPredicate(categoria -> {
+                if (newValue == null || newValue.isBlank()) {
+                    return true;
+                }
+
+                String busqueda = newValue.toLowerCase().trim();
+
+
+                if (categoria.getNombre().toLowerCase().contains(busqueda)) {
+                    return true;
+                }
+
+                else if (String.valueOf(categoria.getId()).contains(busqueda)) {
+                    return true;
+                }
+
+                return false;
+            });
+        });
+
+
+        SortedList<Categoria> categoriasOrdenadas = new SortedList<>(categoriasFiltradas);
+        categoriasOrdenadas.comparatorProperty().bind(tblCategorias.comparatorProperty());
+
+        tblCategorias.setItems(categoriasOrdenadas);
+    }
+
     @FXML
     private void limpiar() {
         txtNombre.clear();
         chkActivo.setSelected(true);
-        categoriaEdicion = null; // Reiniciar estado de edición
+        categoriaEdicion = null;
     }
 
     @FXML

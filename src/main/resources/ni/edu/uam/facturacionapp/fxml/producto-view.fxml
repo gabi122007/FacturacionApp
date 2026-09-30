@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="550.0" prefWidth="750.0"
+<BorderPane prefHeight="600.0" prefWidth="750.0"
             xmlns="http://javafx.com/javafx/21"
             xmlns:fx="http://javafx.com/fxml/1"
             fx:controller="ni.edu.uam.facturacionapp.controller.ProductoController">
@@ -98,8 +98,20 @@
                     </children>
                 </HBox>
 
+                <!-- Campo de Búsqueda -->
+                <HBox alignment="CENTER_LEFT" spacing="10.0">
+                    <children>
+                        <Label text="Buscar:">
+                            <font>
+                                <Font name="System Bold" size="12.0" />
+                            </font>
+                        </Label>
+                        <TextField fx:id="txtBuscar" promptText="Escriba el nombre o código para filtrar..." HBox.hgrow="ALWAYS" />
+                    </children>
+                </HBox>
+
                 <!-- Tabla de Productos -->
-                <TableView fx:id="tblProductos">
+                <TableView fx:id="tblProductos" VBox.vgrow="ALWAYS">
                     <columns>
                         <TableColumn fx:id="colId" text="ID" />
                         <TableColumn fx:id="colCodigo" text="Código" />

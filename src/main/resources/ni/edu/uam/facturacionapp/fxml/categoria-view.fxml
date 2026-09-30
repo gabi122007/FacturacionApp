@@ -42,10 +42,18 @@
                 <Button mnemonicParsing="false" onAction="#editar" prefWidth="100.0" style="-fx-background-color: #38b6ff;" text="Editar" textFill="WHITE" />
                 <Button fx:id="btnGuardar" mnemonicParsing="false" onAction="#guardar" text="Guardar" />
                 <Button fx:id="btnEliminar" mnemonicParsing="false" onAction="#eliminar" text="Eliminar" style="-fx-background-color: #e74c3c; -fx-text-fill: white;" />
-                <Button fx:id="btnActualizar" mnemonicParsing="false" onAction="#actualizar" text="actualizar" />
-                <Button fx:id="btneditar" mnemonicParsing="false" onAction="#editar" text="editar" />
                 <Button fx:id="btnCerrar" mnemonicParsing="false" onAction="#cerrar" text="Cerrar" />
+            </children>
+        </HBox>
 
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <children>
+                <Label text="Buscar:">
+                    <font>
+                        <Font name="System Bold" size="12.0" />
+                    </font>
+                </Label>
+                <TextField fx:id="txtBuscar" promptText="Escriba el nombre o id para filtrar..." HBox.hgrow="ALWAYS" />
             </children>
         </HBox>
 
