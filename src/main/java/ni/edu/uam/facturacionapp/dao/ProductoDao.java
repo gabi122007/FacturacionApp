@@ -1,4 +1,5 @@
 package ni.edu.uam.facturacionapp.dao;
+
 import ni.edu.uam.facturacionapp.model.Categoria;
 import ni.edu.uam.facturacionapp.model.Producto;
 import ni.edu.uam.facturacionapp.database.ConexionDB;
@@ -10,15 +11,21 @@ import java.util.List;
 public class ProductoDao {
 
     public boolean insertar(Producto p) throws SQLException {
-        String sql = "INSERT INTO producto (codigo, nombre, categoria_id, precio_venta, existencia, ruta_imagen, activo) " +
+
+        String sql = "INSERT INTO producto " +
+                "(codigo, nombre, id_categoria, precio_venta, existencia, ruta_imagen, activo) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = ConexionDB.conectar();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        Connection conn = ConexionDB.conectar();
 
-            if (conn == null) {
-                throw new SQLException("No se pudo establecer la conexión a la base de datos.");
-            }
+        if (conn == null) {
+            throw new SQLException(
+                    "No se pudo establecer la conexión a la base de datos."
+            );
+        }
+
+        try (conn;
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, p.getCodigo());
             stmt.setString(2, p.getNombre());
@@ -32,25 +39,35 @@ public class ProductoDao {
         }
     }
 
-    public List<Producto> listar() throws SQLException {
-        List<Producto> lista = new ArrayList<>();
-        String sql = "SELECT p.*, c.nombre AS nombre_categoria, c.activa AS activo_categoria " +
-                "FROM producto p " +
-                "INNER JOIN categoria c ON p.categoria_id = c.id";
 
-        try (Connection conn = ConexionDB.conectar();
+    public List<Producto> listar() throws SQLException {
+
+        List<Producto> lista = new ArrayList<>();
+
+        String sql = "SELECT p.*, " +
+                "c.nombre AS nombre_categoria, " +
+                "c.activa AS activa_cat " +
+                "FROM producto p " +
+                "INNER JOIN categoria c ON p.id_categoria = c.id";
+
+        Connection conn = ConexionDB.conectar();
+
+        if (conn == null) {
+            throw new SQLException(
+                    "No se pudo establecer la conexión a la base de datos."
+            );
+        }
+
+        try (conn;
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
-            if (conn == null) {
-                throw new SQLException("No se pudo establecer la conexión a la base de datos.");
-            }
-
             while (rs.next()) {
+
                 Categoria cat = new Categoria(
-                        rs.getInt("categoria_id"),
+                        rs.getInt("id_categoria"),
                         rs.getString("nombre_categoria"),
-                        rs.getBoolean("activo_categoria")
+                        rs.getBoolean("activa_cat")
                 );
 
                 Producto p = new Producto(
@@ -63,10 +80,56 @@ public class ProductoDao {
                         rs.getString("ruta_imagen"),
                         rs.getBoolean("activo")
                 );
+
                 lista.add(p);
             }
         }
+
         return lista;
     }
-}
 
+    // MÉTODO AGREGADO PARA RESOLVER EL ERROR:
+    public boolean eliminar(int id) throws SQLException {
+        String sql = "DELETE FROM producto WHERE id = ?";
+
+        Connection conn = ConexionDB.conectar();
+
+        if (conn == null) {
+            throw new SQLException(
+                    "No se pudo establecer la conexión a la base de datos."
+            );
+        }
+
+        try (conn;
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+
+            return stmt.executeUpdate() > 0;
+        }
+    }
+    public boolean actualizar(Producto p) throws SQLException {
+        String sql = "UPDATE producto SET codigo = ?, nombre = ?, id_categoria = ?, " +
+                "precio_venta = ?, existencia = ?, ruta_imagen = ?, activo = ? " +
+                "WHERE id = ?";
+
+        Connection conn = ConexionDB.conectar();
+
+        if (conn == null) {
+            throw new SQLException("No se pudo establecer la conexión a la base de datos.");
+        }
+
+        try (conn; PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, p.getCodigo());
+            stmt.setString(2, p.getNombre());
+            stmt.setInt(3, p.getCategoria().getId());
+            stmt.setBigDecimal(4, p.getPrecioVenta());
+            stmt.setInt(5, p.getExistencia());
+            stmt.setString(6, p.getRutaImagen());
+            stmt.setBoolean(7, p.getActivo());
+            stmt.setInt(8, p.getId());
+
+            return stmt.executeUpdate() > 0;
+        }
+    }
+}

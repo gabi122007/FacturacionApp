@@ -91,7 +91,9 @@
                 <!-- Botones de Acción -->
                 <HBox alignment="CENTER_RIGHT" spacing="10.0">
                     <children>
+                        <Button mnemonicParsing="false" onAction="#editar" prefWidth="100.0" style="-fx-background-color: #38b6ff;" text="Editar" textFill="WHITE" />
                         <Button mnemonicParsing="false" onAction="#guardar" prefWidth="100.0" style="-fx-background-color: #2ecc71;" text="Guardar" textFill="WHITE" />
+                        <Button mnemonicParsing="false" onAction="#eliminar" prefWidth="100.0" style="-fx-background-color: #e74c3c;" text="Eliminar" textFill="WHITE" />
                         <Button mnemonicParsing="false" onAction="#cerrar" prefWidth="100.0" style="-fx-background-color: #95a5a6;" text="Cerrar" textFill="WHITE" />
                     </children>
                 </HBox>
