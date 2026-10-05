@@ -75,6 +75,11 @@ public class CategoriaController {
 
         try {
             if (categoriaEdicion == null) {
+                if (categoriaDAO.existeNombre(txtNombre.getText().trim(), null)) {
+                    mensaje(Alert.AlertType.WARNING, "Ya existe una categoría registrada con el nombre: " + txtNombre.getText().trim());
+                    return;
+                }
+
                 Categoria nuevaCategoria = new Categoria(
                         null,
                         txtNombre.getText().trim(),
@@ -87,6 +92,10 @@ public class CategoriaController {
                     limpiar();
                 }
             } else {
+                if (categoriaDAO.existeNombre(txtNombre.getText().trim(), categoriaEdicion.getId())) {
+                    mensaje(Alert.AlertType.WARNING, "Ya existe otra categoría con el nombre: " + txtNombre.getText().trim());
+                    return;
+                }
                 categoriaEdicion.setNombre(txtNombre.getText().trim());
                 categoriaEdicion.setActiva(chkActivo.isSelected());
 
