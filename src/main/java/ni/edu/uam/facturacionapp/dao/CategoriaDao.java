@@ -10,7 +10,7 @@ import java.util.List;
 public class CategoriaDao {
 
     public boolean insertar(Categoria c) throws SQLException {
-        String sql = "INSERT INTO categoria (nombre, active) VALUES (?, ?)";
+        String sql = "INSERT INTO categoria (nombre, activa) VALUES (?, ?)";
 
         Connection conn = ConexionDB.conectar();
 
@@ -19,12 +19,22 @@ public class CategoriaDao {
         }
 
         try (conn;
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, c.getNombre());
             stmt.setBoolean(2, c.isActiva());
 
-            return stmt.executeUpdate() > 0;
+            int filasAfectadas = stmt.executeUpdate();
+
+            if (filasAfectadas > 0) {
+                try (ResultSet rs = stmt.getGeneratedKeys()) {
+                    if (rs.next()) {
+                        c.setId(rs.getInt(1));
+                    }
+                }
+                return true;
+            }
+            return false;
         }
     }
 
@@ -92,4 +102,37 @@ public class CategoriaDao {
 
         return lista;
     }
+
+    public boolean existeNombre(String nombre, Integer idExcluir) throws SQLException {
+        boolean tieneId = (idExcluir != null && idExcluir > 0);
+        String sql = tieneId
+                ? "SELECT COUNT(*) FROM categoria WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?)) AND id != ?"
+                : "SELECT COUNT(*) FROM categoria WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?))";
+
+        Connection conn = ConexionDB.conectar();
+
+        if (conn == null) {
+            throw new SQLException("No se pudo establecer la conexión a la base de datos.");
+        }
+
+        try (conn;
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+
+            ps.setString(1, nombre);
+
+            if (tieneId) {
+                ps.setInt(2, idExcluir);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+
+        return false;
+    }
+
 }
