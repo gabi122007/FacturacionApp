@@ -260,11 +260,12 @@ public class ProductoController {
         ((Stage) txtCodigo.getScene().getWindow()).close();
     }
 
+    @FXML
     private void limpiar() {
         txtCodigo.clear(); txtNombre.clear(); txtPrecio.clear(); txtExistencia.clear();
         cmbCategoria.getSelectionModel().clearSelection();
         chkActivo.setSelected(true); imgProducto.setImage(null); rutaImagen = null;
-        productoEdicion = null; // Reinicia el estado de edición
+        productoEdicion = null;
     }
 
     private void mensaje(Alert.AlertType tipo, String texto) {
