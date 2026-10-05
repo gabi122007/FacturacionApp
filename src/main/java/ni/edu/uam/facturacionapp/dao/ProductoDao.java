@@ -132,4 +132,34 @@ public class ProductoDao {
             return stmt.executeUpdate() > 0;
         }
     }
+
+    public boolean existeNombre(String nombre, Integer idExcluir) throws SQLException {
+        boolean tieneId = (idExcluir != null && idExcluir > 0);
+
+        String sql = tieneId
+                ? "SELECT COUNT(*) FROM producto WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?)) AND id != ?"
+                : "SELECT COUNT(*) FROM producto WHERE LOWER(TRIM(nombre)) = LOWER(TRIM(?))";
+
+        Connection conn = ConexionDB.conectar();
+
+        if (conn == null) {
+            throw new SQLException("No se pudo establecer la conexión a la base de datos.");
+        }
+
+        try (conn; PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, nombre.trim());
+
+            if (tieneId) {
+                ps.setInt(2, idExcluir);
+            }
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+
+        return false;
+    }
 }

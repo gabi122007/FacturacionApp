@@ -148,11 +148,18 @@ public class ProductoController {
                 return;
             }
 
+            String nombre = txtNombre.getText().trim();
+
             if (productoEdicion == null) {
+                if (productoDAO.existeNombre(nombre, null)) {
+                    mensaje(Alert.AlertType.WARNING, "Ya existe un producto registrado con el nombre: " + nombre);
+                    return;
+                }
+
                 Producto nuevoProducto = new Producto(
                         null,
                         txtCodigo.getText().trim(),
-                        txtNombre.getText().trim(),
+                        nombre,
                         cmbCategoria.getValue(),
                         precio,
                         existencia,
@@ -166,8 +173,13 @@ public class ProductoController {
                     limpiar();
                 }
             } else {
+                if (productoDAO.existeNombre(nombre, productoEdicion.getId())) {
+                    mensaje(Alert.AlertType.WARNING, "Ya existe otro producto registrado con el nombre: " + nombre);
+                    return;
+                }
+
                 productoEdicion.setCodigo(txtCodigo.getText().trim());
-                productoEdicion.setNombre(txtNombre.getText().trim());
+                productoEdicion.setNombre(nombre);
                 productoEdicion.setCategoria(cmbCategoria.getValue());
                 productoEdicion.setPrecioVenta(precio);
                 productoEdicion.setExistencia(existencia);
@@ -189,7 +201,6 @@ public class ProductoController {
             mensaje(Alert.AlertType.ERROR, "Error de base de datos: " + e.getMessage());
         }
     }
-
     @FXML
     private void eliminar() {
         Producto productoSeleccionado = tblProductos.getSelectionModel().getSelectedItem();
